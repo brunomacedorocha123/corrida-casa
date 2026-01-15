@@ -725,12 +725,30 @@
 
         /* Responsivo */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
             .setup-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
             
             .buttons {
                 flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                padding: 14px;
             }
             
             .wheel {
@@ -741,10 +759,94 @@
             .player-name {
                 width: 120px;
                 font-size: 1rem;
+                margin-right: 10px;
             }
             
             .game-content {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .current-position {
+                position: static;
+                margin-left: 10px;
+                font-size: 1.1rem;
+                min-width: 60px;
+            }
+            
+            .track {
+                flex-wrap: nowrap;
+                padding: 12px;
+            }
+            
+            .selected-player {
+                font-size: 1.5rem;
+                padding: 15px;
+                min-height: 70px;
+            }
+            
+            .spin-result {
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            
+            .player-name-text {
+                font-size: 1rem;
+            }
+            
+            .stat-box {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .track {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .player-name {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .track-lane {
+                order: 3;
+                width: 100%;
+            }
+            
+            .current-position {
+                order: 2;
+                margin-left: auto;
+            }
+            
+            .wheel {
+                width: 180px;
+                height: 180px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .panel-title {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .wheel {
+                width: 160px;
+                height: 160px;
             }
             
             .stats-grid {
@@ -1600,4 +1702,4 @@
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-</html> isso é o que tenho no code, gostaria que fizesse compativel pra mobile tb..ou já tá certo pra mobile?
+</html>
