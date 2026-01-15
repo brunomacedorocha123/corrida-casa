@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrida com Sorteio - Placar Completo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 3px solid #00b4d8;
+        }
+
+        h1 {
+            color: #00b4d8;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+
+        .subtitle {
+            color: #90e0ef;
+            font-size: 1.2rem;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .setup-panel {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #4361ee;
+            margin-bottom: 20px;
+        }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #4cc9f0;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid #3a3a5d;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(247, 37, 133, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #06d6a0, #048a81);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(6, 214, 160, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .game-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .game-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .race-track-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #7209b7;
+        }
+
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .ranking-panel {
+            border: 2px solid #f8961e;
+        }
+
+        .stats-panel {
+            border: 2px solid #4cc9f0;
+        }
+
+        .history-panel {
+            border: 2px solid #06d6a0;
+        }
+
+        .panel-title {
+            color: #4cc9f0;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(76, 201, 240, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ranking-title {
+            color: #f8961e;
+        }
+
+        .history-title {
+            color: #06d6a0;
+        }
+
+        .race-track {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .track {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .track.active {
+            background: rgba(76, 201, 240, 0.15);
+            border-color: #4cc9f0;
+            box-shadow: 0 0 20px rgba(76, 201, 240, 0.3);
+        }
+
+        .track.finished {
+            background: rgba(248, 150, 30, 0.15);
+            border-color: #f8961e;
+        }
+
+        .player-name {
+            width: 150px;
+            font-weight: bold;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-right: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .position-badge {
+            position: absolute;
+            left: -10px;
+            top: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            z-index: 2;
+        }
+
+        .position-1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .position-2 {
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+            color: #000;
+        }
+
+        .position-3 {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            color: #000;
+        }
+
+        .position-other {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+
+        .track-lane {
+            flex: 1;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .track-progress {
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2));
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .track-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .marker {
+            flex: 1;
+            border-right: 2px dashed rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .marker:last-child {
+            border-right: none;
+        }
+
+        .current-position {
+            position: absolute;
+            right: -60px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #4cc9f0;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .spin-wheel-container {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 3px solid #7209b7;
+        }
+
+        .wheel {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 8px solid #4361ee;
+            box-shadow: 0 0 30px rgba(67, 97, 238, 0.5);
+            transition: transform 3s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .segment-content {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            transform: rotate(45deg);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #f72585;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.8);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #f72585;
+            z-index: 20;
+        }
+
+        .selected-player {
+            font-size: 2rem;
+            color: #4cc9f0;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(76, 201, 240, 0.1);
+            border-radius: 10px;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #4cc9f0;
+        }
+
+        .spin-result {
+            font-size: 1.3rem;
+            color: #f8961e;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(248, 150, 30, 0.1);
+            border-radius: 10px;
+            border: 2px solid #f8961e;
+        }
+
+        /* PLACAR DE COLOCAÇÕES */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s;
+            border-left: 4px solid;
+        }
+
+        .ranking-item.winner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            border-left-color: #FFD700;
+        }
+
+        .ranking-item.second {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(160, 160, 160, 0.2));
+            border-left-color: #C0C0C0;
+        }
+
+        .ranking-item.third {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(160, 82, 45, 0.2));
+            border-left-color: #CD7F32;
+        }
+
+        .ranking-item.other {
+            border-left-color: #4361ee;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .player-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-name-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .player-position {
+            font-weight: bold;
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .position-1-large {
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .position-2-large {
+            color: #C0C0C0;
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+        }
+
+        .position-3-large {
+            color: #CD7F32;
+            text-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
+        }
+
+        .position-other-large {
+            color: #4cc9f0;
+        }
+
+        .player-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .player-casas {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        .player-movimentos {
+            font-size: 0.9rem;
+            color: #90e0ef;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .status-running {
+            background: rgba(76, 201, 240, 0.3);
+            color: #4cc9f0;
+        }
+
+        .status-finished {
+            background: rgba(248, 150, 30, 0.3);
+            color: #f8961e;
+        }
+
+        /* ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(76, 201, 240, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4cc9f0;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #90e0ef;
+        }
+
+        /* HISTÓRICO */
+        .game-history {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #4cc9f0;
+            font-size: 0.95rem;
+        }
+
+        .history-item.spin {
+            border-left-color: #f72585;
+        }
+
+        .history-item.finish {
+            border-left-color: #f8961e;
+        }
+
+        .history-item.position {
+            border-left-color: #FFD700;
+        }
+
+        /* FINAL DO JOGO */
+        .game-finished {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(248, 150, 30, 0.2), rgba(247, 37, 133, 0.2));
+            border-radius: 15px;
+            border: 3px solid #f8961e;
+            margin-top: 20px;
+        }
+
+        .final-ranking {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .final-position {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid;
+        }
+
+        .final-1 {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+        }
+
+        .final-2 {
+            border-color: #C0C0C0;
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(160, 160, 160, 0.1));
+        }
+
+        .final-3 {
+            border-color: #CD7F32;
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(160, 82, 45, 0.1));
+        }
+
+        .final-other {
+            border-color: #4361ee;
+        }
+
+        .position-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        /* Animações */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes highlight {
+            0% { box-shadow: 0 0 0 0 rgba(76, 201, 240, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(76, 201, 240, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 201, 240, 0); }
+        }
+
+        @keyframes celebration {
+            0% { transform: translateY(0) rotate(0); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(0) rotate(0); }
+            75% { transform: translateY(-20px) rotate(-5deg); }
+            100% { transform: translateY(0) rotate(0); }
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        .highlight {
+            animation: highlight 1.5s;
+        }
+
+        .celebration {
+            animation: celebration 0.5s 3;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(76, 201, 240, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(76, 201, 240, 0.8);
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .setup-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .wheel {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .player-name {
+                width: 120px;
+                font-size: 1rem;
+            }
+            
+            .game-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏁 CORRIDA COM SORTEIO - PLACAR COMPLETO 🏁</h1>
+            <p class="subtitle">Sorteio escolhe quem avança | Placar em tempo real com colocações!</p>
+        </header>
+
+        <div class="game-area">
+            <div class="setup-panel">
+                <h2 class="panel-title">⚙️ CONFIGURAÇÃO DO JOGO</h2>
+                <div class="setup-grid">
+                    <div class="input-group">
+                        <label for="numPlayers">👥 Número de Jogadores (2-10):</label>
+                        <input type="number" id="numPlayers" min="2" max="10" value="4">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boardSize">📏 Tamanho da Pista (5-20 casas):</label>
+                        <input type="number" id="boardSize" min="5" max="20" value="10">
+                    </div>
+                </div>
+                
+                <div id="playersContainer"></div>
+                
+                <div class="buttons">
+                    <button id="startBtn" class="btn-primary">
+                        🚀 INICIAR JOGO
+                    </button>
+                    <button id="resetBtn" class="btn-secondary" disabled>
+                        🔄 REINICIAR
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="race-track-container">
+                    <h2 class="panel-title">🏃‍♂️ PISTAS DE CORRIDA</h2>
+                    <div id="raceTrack" class="race-track">
+                        <!-- As pistas serão geradas aqui -->
+                    </div>
+                    
+                    <div class="spin-wheel-container">
+                        <h2 class="panel-title">🎡 SORTEIO</h2>
+                        <div class="wheel" id="wheel">
+                            <div class="wheel-pointer"></div>
+                            <div class="wheel-center"></div>
+                            <!-- Segmentos serão gerados aqui -->
+                        </div>
+                        
+                        <div id="selectedPlayer" class="selected-player">
+                            Clique em GIRAR SORTEIO para começar!
+                        </div>
+                        
+                        <div id="spinResult" class="spin-result">
+                            Aguardando sorteio...
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="spinBtn" class="btn-primary" disabled>
+                                🎲 GIRAR SORTEIO
+                            </button>
+                            <button id="autoSpinBtn" class="btn-success" disabled>
+                                ⚡ SORTEIO AUTOMÁTICO
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="panel ranking-panel">
+                        <h2 class="panel-title ranking-title">
+                            <i class="fas fa-trophy"></i> PLACAR DE COLOCAÇÕES
+                        </h2>
+                        <div id="rankingList" class="ranking-list">
+                            <!-- Placar será gerado aqui -->
+                            <div style="text-align: center; padding: 30px; color: #90e0ef;">
+                                Inicie o jogo para ver o placar
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="panel stats-panel">
+                        <h2 class="panel-title">
+                            <i class="fas fa-chart-bar"></i> ESTATÍSTICAS
+                        </h2>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-value" id="totalSpins">0</div>
+                                <div class="stat-label">Sorteios Realizados</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="finishedPlayers">0</div>
+                                <div class="stat-label">Jogadores Finalizados</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="currentRound">0</div>
+                                <div class="stat-label">Rodada Atual</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="activePlayers">0</div>
+                                <div class="stat-label">Jogadores Ativos</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="panel history-panel">
+                        <h2 class="panel-title history-title">
+                            <i class="fas fa-history"></i> HISTÓRICO DO JOGO
+                        </h2>
+                        <div id="gameHistory" class="game-history">
+                            <!-- Histórico do jogo -->
+                            <div class="history-item">
+                                Configure e inicie o jogo para começar!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameFinished" class="game-finished" style="display: none;">
+                <!-- Tela de finalização será gerada aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicionando ícones do Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Variáveis do jogo
+        let players = [];
+        let boardSize = 10;
+        let gameActive = false;
+        let wheelSpinning = false;
+        let totalSpins = 0;
+        let currentRound = 0;
+        let activePlayers = [];
+        let autoSpinInterval = null;
+        let finishPositions = []; // Armazena ordem de chegada
+        let playerColors = [
+            '#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', 
+            '#118AB2', '#EF476F', '#073B4C', '#7209B7',
+            '#F15BB5', '#00BBF9'
+        ];
+        
+        // Elementos do DOM
+        const numPlayersInput = document.getElementById('numPlayers');
+        const boardSizeInput = document.getElementById('boardSize');
+        const playersContainer = document.getElementById('playersContainer');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const raceTrack = document.getElementById('raceTrack');
+        const wheel = document.getElementById('wheel');
+        const selectedPlayerDiv = document.getElementById('selectedPlayer');
+        const spinResultDiv = document.getElementById('spinResult');
+        const spinBtn = document.getElementById('spinBtn');
+        const autoSpinBtn = document.getElementById('autoSpinBtn');
+        const totalSpinsSpan = document.getElementById('totalSpins');
+        const finishedPlayersSpan = document.getElementById('finishedPlayers');
+        const currentRoundSpan = document.getElementById('currentRound');
+        const activePlayersSpan = document.getElementById('activePlayers');
+        const rankingList = document.getElementById('rankingList');
+        const gameHistory = document.getElementById('gameHistory');
+        const gameFinishedDiv = document.getElementById('gameFinished');
+        
+        // Inicialização
+        function init() {
+            updatePlayersInputs();
+            
+            // Event Listeners
+            numPlayersInput.addEventListener('change', updatePlayersInputs);
+            boardSizeInput.addEventListener('change', updateGameSettings);
+            startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', resetGame);
+            spinBtn.addEventListener('click', spinWheel);
+            autoSpinBtn.addEventListener('click', toggleAutoSpin);
+            
+            // Tecla espaço para girar o sorteio
+            document.addEventListener('keydown', function(e) {
+                if (e.code === 'Space' && gameActive && !wheelSpinning) {
+                    e.preventDefault();
+                    spinWheel();
+                }
+            });
+        }
+        
+        // Atualiza os inputs dos jogadores
+        function updatePlayersInputs() {
+            const numPlayers = parseInt(numPlayersInput.value);
+            playersContainer.innerHTML = '';
+            
+            for (let i = 0; i < numPlayers; i++) {
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group';
+                
+                inputGroup.innerHTML = `
+                    <label for="player${i+1}">Jogador ${i+1}:</label>
+                    <input type="text" id="player${i+1}" placeholder="Nome do jogador" value="Jogador ${i+1}">
+                `;
+                
+                playersContainer.appendChild(inputGroup);
+            }
+        }
+        
+        // Atualiza configurações do jogo
+        function updateGameSettings() {
+            boardSize = parseInt(boardSizeInput.value);
+        }
+        
+        // Inicia o jogo
+        function startGame() {
+            // Coleta os dados dos jogadores
+            players = [];
+            const numPlayers = parseInt(numPlayersInput.value);
+            boardSize = parseInt(boardSizeInput.value);
+            
+            for (let i = 0; i < numPlayers; i++) {
+                const playerInput = document.getElementById(`player${i+1}`);
+                const playerName = playerInput.value.trim() || `Jogador ${i+1}`;
+                
+                players.push({
+                    id: i,
+                    name: playerName,
+                    position: 0,
+                    color: playerColors[i % playerColors.length],
+                    finished: false,
+                    totalMoves: 0,
+                    finishPosition: 0, // 0 = não finalizou
+                    isLeading: false
+                });
+            }
+            
+            // Inicializa variáveis
+            finishPositions = [];
+            activePlayers = [...players];
+            totalSpins = 0;
+            currentRound = 1;
+            
+            // Atualiza interface
+            gameActive = true;
+            startBtn.disabled = true;
+            resetBtn.disabled = false;
+            spinBtn.disabled = false;
+            autoSpinBtn.disabled = false;
+            
+            // Desabilita inputs de configuração
+            numPlayersInput.disabled = true;
+            boardSizeInput.disabled = true;
+            document.querySelectorAll('#playersContainer input').forEach(input => {
+                input.disabled = true;
+            });
+            
+            // Cria as pistas
+            createRaceTracks();
+            
+            // Cria a roleta
+            createWheel();
+            
+            // Atualiza placar
+            updateRanking();
+            
+            // Atualiza estatísticas
+            updateStats();
+            
+            // Atualiza mensagens iniciais
+            selectedPlayerDiv.textContent = "Clique em GIRAR SORTEIO para começar!";
+            spinResultDiv.textContent = "Aguardando primeiro sorteio...";
+            
+            // Adiciona ao histórico
+            addToHistory(`🎮 Jogo iniciado com ${players.length} jogadores! Pista com ${boardSize} casas.`, 'normal');
+            
+            // Esconde tela de finalização se estiver visível
+            gameFinishedDiv.style.display = 'none';
+        }
+        
+        // Cria as pistas de corrida
+        function createRaceTracks() {
+            raceTrack.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const track = document.createElement('div');
+                track.className = 'track';
+                track.id = `track-${player.id}`;
+                
+                const markers = Array.from({length: boardSize}, (_, i) => 
+                    `<div class="marker">${i + 1}</div>`
+                ).join('');
+                
+                track.innerHTML = `
+                    <div class="player-name" style="background: ${player.color}">
+                        ${player.name}
+                    </div>
+                    <div class="track-lane">
+                        <div class="track-progress" id="progress-${player.id}" 
+                             style="width: 0%; background: ${player.color}">
+                        </div>
+                        <div class="track-markers">
+                            ${markers}
+                        </div>
+                    </div>
+                    <div class="current-position" id="position-${player.id}">
+                        0/${boardSize}
+                    </div>
+                `;
+                
+                raceTrack.appendChild(track);
+            });
+        }
+        
+        // Cria a roleta de sorteio
+        function createWheel() {
+            wheel.innerHTML = '';
+            
+            // Adiciona ponteiro e centro
+            wheel.innerHTML = `
+                <div class="wheel-pointer"></div>
+                <div class="wheel-center"></div>
+            `;
+            
+            // Reseta transformação da roleta
+            wheel.style.transform = 'rotate(0deg)';
+            
+            // Adiciona segmentos apenas dos jogadores ativos
+            if (activePlayers.length === 0) return;
+            
+            const segmentAngle = 360 / activePlayers.length;
+            
+            activePlayers.forEach((player, index) => {
+                const segment = document.createElement('div');
+                segment.className = 'wheel-segment';
+                segment.style.backgroundColor = player.color;
+                segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+                
+                segment.innerHTML = `
+                    <div class="segment-content">
+                        ${player.name}
+                    </div>
+                `;
+                
+                wheel.appendChild(segment);
+            });
+        }
+        
+        // Gira a roleta
+        function spinWheel() {
+            if (!gameActive || wheelSpinning || activePlayers.length === 0) return;
+            
+            wheelSpinning = true;
+            spinBtn.disabled = true;
+            autoSpinBtn.disabled = true;
+            
+            // Seleciona um jogador aleatório dos ativos
+            const randomIndex = Math.floor(Math.random() * activePlayers.length);
+            const selectedPlayer = activePlayers[randomIndex];
+            
+            // Calcula ângulo para parar no jogador selecionado
+            const segmentAngle = 360 / activePlayers.length;
+            const targetAngle = 3600 + (randomIndex * segmentAngle); // 10 voltas + offset para o jogador
+            
+            // Atualiza display ANTES da animação
+            selectedPlayerDiv.innerHTML = `
+                <div style="color: ${selectedPlayer.color}">
+                    🎡 GIRANDO SORTEIO...
+                </div>
+            `;
+            
+            spinResultDiv.textContent = "A roleta está girando...";
+            
+            // Aplica animação
+            wheel.style.transform = `rotate(${targetAngle}deg)`;
+            
+            // Incrementa contador de sorteios
+            totalSpins++;
+            
+            // Após animação, avança o jogador
+            setTimeout(() => {
+                // Atualiza display com o jogador sorteado
+                selectedPlayerDiv.innerHTML = `
+                    <div class="pulse" style="color: ${selectedPlayer.color}">
+                        🎯 SORTEADO: ${selectedPlayer.name.toUpperCase()}!
+                    </div>
+                `;
+                
+                // Avança o jogador
+                advancePlayer(selectedPlayer);
+                
+                // Atualiza interface
+                wheelSpinning = false;
+                spinBtn.disabled = false;
+                autoSpinBtn.disabled = false;
+                
+                // Atualiza estatísticas
+                updateStats();
+                
+                // Se acabaram os jogadores, finaliza o jogo
+                if (activePlayers.length === 0) {
+                    endGame();
+                }
+            }, 3200);
+            
+            // Adiciona ao histórico
+            addToHistory(`🎲 Sorteio ${totalSpins}: ${selectedPlayer.name} foi sorteado!`, 'spin');
+        }
+        
+        // Avança o jogador sorteado
+        function advancePlayer(player) {
+            if (player.finished) return;
+            
+            // Avança 1 casa
+            player.position++;
+            player.totalMoves++;
+            
+            // Atualiza progresso visual
+            const progressBar = document.getElementById(`progress-${player.id}`);
+            const positionDisplay = document.getElementById(`position-${player.id}`);
+            const trackElement = document.getElementById(`track-${player.id}`);
+            
+            const progressPercent = (player.position / boardSize) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            positionDisplay.textContent = `${player.position}/${boardSize}`;
+            
+            // Adiciona efeito visual
+            trackElement.classList.add('active');
+            trackElement.classList.add('highlight');
+            
+            setTimeout(() => {
+                trackElement.classList.remove('highlight');
+            }, 1500);
+            
+            // Verifica se chegou ao final
+            if (player.position >= boardSize) {
+                finishPlayer(player);
+            } else {
+                // Atualiza resultado do sorteio
+                spinResultDiv.innerHTML = `
+                    <div style="color: ${player.color}">
+                        ✅ ${player.name} avançou para a casa ${player.position}!
+                    </div>
+                `;
+            }
+            
+            // Atualiza placar e lista de jogadores
+            updateRanking();
+            
+            // Incrementa rodada se todos os ativos jogaram
+            updateCurrentRound();
+        }
+        
+        // Finaliza um jogador
+        function finishPlayer(player) {
+            player.finished = true;
+            player.position = boardSize; // Garante posição exata
+            
+            // Define a posição de chegada
+            const finishPosition = finishPositions.length + 1;
+            player.finishPosition = finishPosition;
+            finishPositions.push(player);
+            
+            // Remove dos jogadores ativos
+            activePlayers = activePlayers.filter(p => p.id !== player.id);
+            
+            // Atualiza elemento da pista
+            const trackElement = document.getElementById(`track-${player.id}`);
+            trackElement.classList.add('finished');
+            trackElement.classList.remove('active');
+            
+            // Adiciona badge de posição na pista
+            const playerNameDiv = trackElement.querySelector('.player-name');
+            const badge = document.createElement('div');
+            badge.className = `position-badge position-${finishPosition <= 3 ? finishPosition : 'other'}`;
+            badge.innerHTML = getPositionIcon(finishPosition);
+            playerNameDiv.appendChild(badge);
+            
+            // Efeito de celebração
+            trackElement.classList.add('celebration');
+            
+            // Atualiza roleta se ainda houver jogadores ativos
+            if (activePlayers.length > 0) {
+                createWheel();
+                
+                // Atualiza mensagem
+                selectedPlayerDiv.innerHTML = `
+                    <div style="color: ${player.color}">
+                        🏁 ${player.name} chegou em ${getPositionText(finishPosition)}!
+                    </div>
+                `;
+                
+                spinResultDiv.innerHTML = `
+                    <div style="color: ${player.color}">
+                        🎉 ${player.name} CHEGOU AO FIM em ${getPositionText(finishPosition)} lugar!
+                    </div>
+                `;
+            }
+            
+            // Adiciona ao histórico
+            addToHistory(`🏁 ${player.name} chegou em ${getPositionText(finishPosition)} lugar!`, 'position');
+            
+            // Se foi o primeiro colocado, mensagem especial
+            if (finishPosition === 1) {
+                addToHistory(`🥇 ${player.name} é o PRIMEIRO COLOCADO! Parabéns!`, 'finish');
+                // Efeito especial para o primeiro
+                setTimeout(() => {
+                    trackElement.style.animation = 'pulse 2s infinite';
+                }, 1500);
+            }
+        }
+        
+        // Finaliza o jogo
+        function endGame() {
+            gameActive = false;
+            spinBtn.disabled = true;
+            autoSpinBtn.disabled = true;
+            
+            if (autoSpinInterval) {
+                clearInterval(autoSpinInterval);
+                autoSpinBtn.textContent = '⚡ SORTEIO AUTOMÁTICO';
+                autoSpinInterval = null;
+            }
+            
+            selectedPlayerDiv.innerHTML = `
+                <div style="color: #f8961e; font-size: 2.5rem;">
+                    🏆 JOGO FINALIZADO! 🏆
+                </div>
+            `;
+            
+            spinResultDiv.innerHTML = `
+                <div style="color: #f8961e; font-size: 1.5rem;">
+                    🎉 TODOS OS JOGADORES CHEGARAM AO FIM!
+                </div>
+            `;
+            
+            // Mostra tela de finalização com ranking completo
+            showFinalRanking();
+            
+            // Adiciona ao histórico
+            addToHistory(`🏁🏁🏁 JOGO FINALIZADO! ${players.length} jogadores completaram a corrida!`, 'finish');
+        }
+        
+        // Mostra ranking final completo
+        function showFinalRanking() {
+            // Ordena jogadores por posição de chegada
+            const ranking = [...players].sort((a, b) => a.finishPosition - b.finishPosition);
+            
+            let finalHTML = `
+                <h2 style="color: #f8961e; font-size: 2.5rem; margin-bottom: 20px;">
+                    🏆 RANKING FINAL 🏆
+                </h2>
+                <div style="color: #90e0ef; margin-bottom: 30px; font-size: 1.2rem;">
+                    ${players.length} jogadores | ${totalSpins} sorteios | ${currentRound} rodadas
+                </div>
+            `;
+            
+            // Grid com todas as posições
+            finalHTML += '<div class="final-ranking">';
+            
+            ranking.forEach((player, index) => {
+                const position = index + 1;
+                const positionClass = position <= 3 ? `final-${position}` : 'final-other';
+                
+                finalHTML += `
+                    <div class="final-position ${positionClass}">
+                        <div class="position-icon">
+                            ${getPositionIcon(position)}
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold; color: ${player.color}; margin: 10px 0;">
+                            ${player.name}
+                        </div>
+                        <div style="font-size: 1.5rem; color: #4cc9f0; margin: 5px 0;">
+                            ${getPositionText(position)} Lugar
+                        </div>
+                        <div style="color: #90e0ef; margin: 5px 0;">
+                            ${player.totalMoves} movimentos
+                        </div>
+                        <div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                            Casa ${player.position}/${boardSize}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            finalHTML += '</div>';
+            
+            // Botão para ver resumo
+            finalHTML += `
+                <div style="margin-top: 30px;">
+                    <button id="showSummaryBtn" class="btn-primary" style="margin: 10px;">
+                        📊 VER RESUMO COMPLETO
+                    </button>
+                    <button id="newGameBtn" class="btn-secondary" style="margin: 10px;">
+                        🎮 NOVO JOGO
+                    </button>
+                </div>
+            `;
+            
+            gameFinishedDiv.innerHTML = finalHTML;
+            gameFinishedDiv.style.display = 'block';
+            
+            // Adiciona event listeners aos botões
+            setTimeout(() => {
+                document.getElementById('showSummaryBtn')?.addEventListener('click', showGameSummary);
+                document.getElementById('newGameBtn')?.addEventListener('click', resetGame);
+            }, 100);
+        }
+        
+        // Mostra resumo completo do jogo
+        function showGameSummary() {
+            const ranking = [...players].sort((a, b) => a.finishPosition - b.finishPosition);
+            
+            let summary = `
+                <h3 style="color: #4cc9f0; margin: 20px 0;">📊 RESUMO DETALHADO DO JOGO</h3>
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+            `;
+            
+            ranking.forEach((player, index) => {
+                summary += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; 
+                                padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.05); 
+                                border-radius: 8px; border-left: 4px solid ${player.color}">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="font-size: 1.5rem; font-weight: bold;">
+                                ${getPositionIcon(index + 1)}
+                            </div>
+                            <div>
+                                <div style="font-weight: bold; color: ${player.color}">${player.name}</div>
+                                <div style="font-size: 0.9rem; color: #90e0ef;">${getPositionText(index + 1)} colocado</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.2rem; color: #4cc9f0;">${player.totalMoves} movimentos</div>
+                            <div style="font-size: 0.9rem; color: #90e0ef;">Média: ${(player.totalMoves / totalSpins * 100).toFixed(1)}% dos sorteios</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            summary += `
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                        <div style="color: #4cc9f0; font-weight: bold;">Total de Sorteios</div>
+                        <div style="font-size: 2rem; color: white;">${totalSpins}</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                        <div style="color: #4cc9f0; font-weight: bold;">Rodadas</div>
+                        <div style="font-size: 2rem; color: white;">${currentRound}</div>
+                    </div>
+                </div>
+            `;
+            
+            spinResultDiv.innerHTML = summary;
+        }
+        
+        // Atualiza o placar de colocações
+        function updateRanking() {
+            // Ordena jogadores: primeiro os que finalizaram, depois por posição, depois por progresso
+            const sortedPlayers = [...players].sort((a, b) => {
+                if (a.finished && b.finished) {
+                    return a.finishPosition - b.finishPosition;
+                }
+                if (a.finished && !b.finished) return -1;
+                if (!a.finished && b.finished) return 1;
+                // Ambos ainda correndo: ordena por posição (maior primeiro)
+                return b.position - a.position;
+            });
+            
+            rankingList.innerHTML = '';
+            
+            if (sortedPlayers.length === 0) {
+                rankingList.innerHTML = '<div style="text-align: center; padding: 30px; color: #90e0ef;">Nenhum jogador ainda</div>';
+                return;
+            }
+            
+            sortedPlayers.forEach((player, index) => {
+                const position = index + 1;
+                const rankingItem = document.createElement('div');
+                
+                // Define classe baseada na posição
+                let itemClass = 'ranking-item ';
+                if (player.finished) {
+                    if (player.finishPosition === 1) itemClass += 'winner';
+                    else if (player.finishPosition === 2) itemClass += 'second';
+                    else if (player.finishPosition === 3) itemClass += 'third';
+                    else itemClass += 'other';
+                } else {
+                    itemClass += 'other';
+                }
+                
+                rankingItem.className = itemClass;
+                
+                // Ícone da posição
+                const positionIcon = player.finished ? getPositionIcon(player.finishPosition) : '🏃‍♂️';
+                const positionText = player.finished ? getPositionText(player.finishPosition) : `${position}º`;
+                
+                rankingItem.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-color" style="background: ${player.color}"></div>
+                        <div class="player-details">
+                            <div class="player-name-text">${player.name}</div>
+                            <div class="status-badge ${player.finished ? 'status-finished' : 'status-running'}">
+                                ${player.finished ? '🏁 FINALIZOU' : '🏃‍♂️ CORRENDO'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="player-position ${player.finished ? `position-${player.finishPosition <= 3 ? player.finishPosition : 'other'}-large` : 'position-other-large'}">
+                        ${positionIcon}<br>
+                        <span style="font-size: 0.8rem;">${positionText}</span>
+                    </div>
+                    <div class="player-stats">
+                        <div class="player-casas">
+                            ${player.position}/${boardSize}
+                        </div>
+                        <div class="player-movimentos">
+                            ${player.totalMoves} movimentos
+                        </div>
+                    </div>
+                `;
+                
+                rankingList.appendChild(rankingItem);
+            });
+        }
+        
+        // Atualiza rodada atual
+        function updateCurrentRound() {
+            // Incrementa rodada se todos os jogadores ativos jogaram aproximadamente
+            if (totalSpins % activePlayers.length === 0 && totalSpins > 0) {
+                currentRound++;
+            }
+            updateStats();
+        }
+        
+        // Atualiza estatísticas
+        function updateStats() {
+            totalSpinsSpan.textContent = totalSpins;
+            finishedPlayersSpan.textContent = players.filter(p => p.finished).length;
+            currentRoundSpan.textContent = currentRound;
+            activePlayersSpan.textContent = activePlayers.length;
+        }
+        
+        // Adiciona ao histórico
+        function addToHistory(message, type = 'normal') {
+            const historyItem = document.createElement('div');
+            historyItem.className = `history-item ${type}`;
+            historyItem.textContent = `[Rodada ${currentRound}] ${message}`;
+            
+            gameHistory.prepend(historyItem);
+            
+            // Limita histórico a 20 itens
+            if (gameHistory.children.length > 20) {
+                gameHistory.removeChild(gameHistory.lastChild);
+            }
+        }
+        
+        // Alterna sorteio automático
+        function toggleAutoSpin() {
+            if (!gameActive) return;
+            
+            if (autoSpinInterval) {
+                // Para o sorteio automático
+                clearInterval(autoSpinInterval);
+                autoSpinInterval = null;
+                autoSpinBtn.textContent = '⚡ SORTEIO AUTOMÁTICO';
+                spinBtn.disabled = false;
+            } else {
+                // Inicia sorteio automático
+                autoSpinBtn.textContent = '⏸️ PARAR SORTEIO';
+                spinBtn.disabled = true;
+                
+                autoSpinInterval = setInterval(() => {
+                    if (!wheelSpinning && gameActive && activePlayers.length > 0) {
+                        spinWheel();
+                    } else if (activePlayers.length === 0) {
+                        clearInterval(autoSpinInterval);
+                        autoSpinBtn.textContent = '⚡ SORTEIO AUTOMÁTICO';
+                    }
+                }, 3500); // 3.5 segundos entre sorteios
+            }
+        }
+        
+        // Reinicia o jogo
+        function resetGame() {
+            // Limpa intervalo automático
+            if (autoSpinInterval) {
+                clearInterval(autoSpinInterval);
+                autoSpinInterval = null;
+            }
+            
+            // Reseta variáveis
+            gameActive = false;
+            wheelSpinning = false;
+            totalSpins = 0;
+            currentRound = 0;
+            activePlayers = [];
+            finishPositions = [];
+            
+            // Reseta interface
+            startBtn.disabled = false;
+            resetBtn.disabled = true;
+            spinBtn.disabled = true;
+            autoSpinBtn.disabled = true;
+            autoSpinBtn.textContent = '⚡ SORTEIO AUTOMÁTICO';
+            
+            // Reativa inputs
+            numPlayersInput.disabled = false;
+            boardSizeInput.disabled = false;
+            document.querySelectorAll('#playersContainer input').forEach(input => {
+                input.disabled = false;
+            });
+            
+            // Limpa áreas do jogo
+            raceTrack.innerHTML = '<div style="text-align: center; padding: 40px; color: #90e0ef;">Configure e inicie o jogo para ver as pistas</div>';
+            wheel.innerHTML = '';
+            selectedPlayerDiv.textContent = 'Clique em GIRAR SORTEIO para começar!';
+            spinResultDiv.textContent = 'Aguardando sorteio...';
+            rankingList.innerHTML = '<div style="text-align: center; padding: 30px; color: #90e0ef;">Inicie o jogo para ver o placar</div>';
+            gameHistory.innerHTML = '<div class="history-item">Configure e inicie o jogo para começar!</div>';
+            gameFinishedDiv.style.display = 'none';
+            
+            // Atualiza estatísticas
+            updateStats();
+            
+            // Adiciona ao histórico
+            addToHistory('🔄 Jogo reiniciado. Configure um novo jogo.', 'normal');
+        }
+        
+        // Funções auxiliares
+        function getPositionIcon(position) {
+            switch(position) {
+                case 1: return '🥇';
+                case 2: return '🥈';
+                case 3: return '🥉';
+                default: return `${position}º`;
+            }
+        }
+        
+        function getPositionText(position) {
+            switch(position) {
+                case 1: return '1º';
+                case 2: return '2º';
+                case 3: return '3º';
+                default: return `${position}º`;
+            }
+        }
+        
+        // Inicializa o jogo quando a página carrega
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> isso é o que tenho no code...quais primeiro passo, não tá ainda hospedado
